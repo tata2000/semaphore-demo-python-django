@@ -21,6 +21,7 @@ blocks:
             - cache restore
             - pip download --cache-dir .pip_cache -r requirements.txt
             - cache store
+          parallelism: 4
   - name: Run Code Analysis
     task:
       prologue:
@@ -32,6 +33,7 @@ blocks:
         - name: Pylint
           commands:
             - git ls-files | grep -v 'migrations' | grep -v 'settings.py' | grep -v 'manage.py' | grep -E '.py$' | xargs pylint -E --load-plugins=pylint_django
+          parallelism: 4
   - name: Run Unit Tests
     task:
       prologue:
@@ -44,6 +46,7 @@ blocks:
         - name: Model Test
           commands:
             - python manage.py test tasks.tests.test_models
+          parallelism: 4
         - name: View Test
           commands:
             - python manage.py test tasks.tests.test_views
@@ -65,6 +68,7 @@ blocks:
         - name: Browser Test
           commands:
             - python manage.py test tasks.tests.test_browser
+          parallelism: 4
   - name: Run Security Tests
     task:
       jobs:
@@ -74,6 +78,7 @@ blocks:
             - cache restore
             - pip install -r requirements.txt --cache-dir .pip_cache
             - python manage.py check --deploy --fail-level ERROR
+          parallelism: 4
 promotions:
   - name: Promotion 1
     pipeline_file: pipeline_2.yml
